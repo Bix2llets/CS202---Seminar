@@ -1,4 +1,4 @@
-# The Builder design pattern
+# Builder
 
 ## Problem
 
@@ -68,5 +68,75 @@ class Builder {
     +addFeature1()
     +addFeature2()
     +addFeature3()
+}
+```
+
+Builders' construction of objects can also be abstracted further with Directors. They are classes that provides methods of invoking a sequence of methods of a builder class and return the result object. Using such methods allows reuse of construction of a particular object throughout the program.
+
+## Report content
+
+1. A realworld problem (that needs your pattern to solve)
+1. A naive solution (without your pattern)
+1. Some problems occur with your naive solution
+1. An introduction about your pattern
+1. A general class diagram
+1. A class diagram for your problem in step 1
+1. The implementation of your pattern
+1. Pros and cons of our pattern
+1. Some other realworld problems, how the design patterns are applied in web dev, mobile dev
+1. Quiz: 5-8 questions, ABCD choices, with small gifts (candies, cakes, hugs, kisses...) for correct answers
+
+### 1. Real world problem
+
+In a shooter game, there are various guns that belong to different types. Each of them can be customized with attachments. For simplicity, we assume every gun has the same set of possible attachments.
+
+A gun can have attachments to be installed on. Some of them might have their own functions: the optical sight has toggleable lighting, the underbarrel utility can be used, etc. . Player can freely customize their weapon, hence there are a lot of variety of guns that we need to deal with.
+
+### 2. Naive solution and their drawbacks
+
+A naive solution for this problem is that we manage the attachment via attributes of the `Gun` class.
+
+```mermaid
+classDiagram
+class Gun{
+hasOpticalSight: bool
+hasUnderbarrel: bool
+hasStock: bool
+hasExternalMagazine: bool
+hasGrip: bool
+
+opticalSight: OpticalSight
+underbarrel: Underbarrel
+stock: GunStock
+externalMagazine: ExternalMagazine
+grip: GunGrip
+
++Gun(hasOpticalSight, opticalSight, hasUnderbarrel, underbarrel,  hasStock, stock, hasExternalMagazine, externalMagazine, hasGrip, grip)  }
+```
+
+With this approach, it is easy to encapsulate all needed data into the `Gun` class.
+However, the constructor of this class, if needed all information to initialize them, is too long for a clean and maintainable code.
+
+For example, to create a gun with holographic sight and wooden stock, the following constructor is called
+`Gun(true, holographicSight, false, nullptr, false, nullptr, true, woodenStock, false, nullptr, false, nullptr)`
+
+As we can expect, there are too much parameter for the constructor. Moreover, it reduces its readability as reader won't know what `false` and `nullptr` stands for.
+
+We can use the feature of default parameters to reduce the number of arguments needed to be provided, however this only allows us to omit arguments at the end of the constructor.
+
+Another approach is that we use concrete classes to narrow down the amount of attribute used for tracking the attachments. With this approach, we need a unified interface to create them as they all are the derived classes of `Gun`. The more specific the concrete classes are, the more classes we need to create, and the longer their names are in order to describe which type of gun will be created with them. For example, the name for the class in the previous example will be `GunOpticalStock`. A name for the class of gun with all attachments possible can be `GunOpticalUnderbarrelStockExMagGrip`. Such classes' names are hard to read hence also reduce the maintainability of the program. Furthermore, the number of classes increases exponentially.
+
+### The Builder design pattern
+
+This pattern is about separation of construction of complex objects into sequential steps and manage them with middlemen, called the Builders. They serve as an abstraction layer, hiding the detailed construction of object while providing a unified interface for user to build up the desired object step by step. Moreover, the builders can also enforce some parameter during the construction of object, hence there might be many builders for one object.
+
+To reuse a specific sequence of steps in building an object, we can also use another type of class, called the `Director`. The `Director` provide methods to invoke a sequence of construction steps in the `Builder` associated with it. It can also change the builder used in the sequences, provided that they share the same interface. Hence, the `Director` can also be used to construct different kind of classes if their `Builder` share the same base classes
+
+```mermaid
+classDiagram
+
+class ExampleClass
+class BuilderBase{
+
 }
 ```
