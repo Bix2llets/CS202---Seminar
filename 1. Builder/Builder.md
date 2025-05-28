@@ -90,8 +90,7 @@ Builders' construction of objects can also be abstracted further with Directors.
 
 In a shooter game, there are various guns that belong to different types. Each of them can be customized with attachments. For simplicity, we assume every gun has the same set of possible attachments.
 
-A gun can have attachments to be installed on. Some of them might have their own functions: the optical sight has toggleable lighting, the underbarrel utility can be used, etc. . Player can freely customize their weapon, hence there are a lot of variety of guns that we need to deal with.
-
+A gun can have attachments to be installed on. Some of them might have their own functionality. Some of them might have their tracking data. For example, the optical sight has toggleable lighting and energy left, the underbarrel utility can be used and need to track the remaining uses, magazine can be reloaded and need to keep track of rounds left, etc. . Player can freely customize their weapon, hence there are a lot of variety of guns that we need to deal with.
 ### 2. Naive solution and their drawbacks
 
 A naive solution for this problem is that we manage the attachment via attributes of the `Gun` class.
@@ -99,11 +98,6 @@ A naive solution for this problem is that we manage the attachment via attribute
 ```mermaid
 classDiagram
 class Gun{
-hasOpticalSight: bool
-hasUnderbarrel: bool
-hasStock: bool
-hasExternalMagazine: bool
-hasGrip: bool
 
 opticalSight: OpticalSight
 underbarrel: Underbarrel
@@ -111,7 +105,7 @@ stock: GunStock
 externalMagazine: ExternalMagazine
 grip: GunGrip
 
-+Gun(hasOpticalSight, opticalSight, hasUnderbarrel, underbarrel,  hasStock, stock, hasExternalMagazine, externalMagazine, hasGrip, grip)  }
++Gun(external)  }
 ```
 
 With this approach, it is easy to encapsulate all needed data into the `Gun` class.
@@ -134,9 +128,13 @@ To reuse a specific sequence of steps in building an object, we can also use ano
 
 ```mermaid
 classDiagram
-
-class ExampleClass
+class ExampleClass{
+ 
+}
+ExampleClass *-- BuilderBase
 class BuilderBase{
+ result: ExampleClass
+
 
 }
 ```
