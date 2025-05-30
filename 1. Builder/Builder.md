@@ -174,36 +174,36 @@ class GunBuilder {
     +getObject() Gun
     +reset()
 
-    attachOpticalSight()*
-    attachUnderbarrel()*
-    attachStock()*
-    attachMagazine()*
-    attachGrip()*
+    attachOpticalSight()* Builder
+    attachUnderbarrel()* Builder
+    attachStock()* Builder
+    attachMagazine()* Builder
+    attachGrip()* Builder
 }
 Gun "1" <-- GunBuilder
 GunBuilder <|.. AssaultRifleBuilder
 GunBuilder <|.. SniperRifleBuilder
 GunBuilder <|.. MachineGunBuilder
 class AssaultRifleBuilder {
-    +attachOpticalSight()
-    +attachUnderbarrel()
-    +attachStock()
-    +attachMagazine()
-    +attachGrip()
+    +attachOpticalSight() Builder 
+    +attachUnderbarrel()  Builder
+    +attachStock() Builder
+    +attachMagazine() Builder
+    +attachGrip() Builder
 }
 class SniperRifleBuilder {
-    +attachOpticalSight()
-    +attachUnderbarrel()
-    +attachStock()
-    +attachMagazine()
-    +attachGrip()
+    +attachOpticalSight()Builder
+    +attachUnderbarrel()Builder
+    +attachStock()Builder
+    +attachMagazine()Builder
+    +attachGrip()Builder
 }
 class MachineGunBuilder {
-    +attachOpticalSight()
-    +attachUnderbarrel()
-    +attachStock()
-    +attachMagazine()
-    +attachGrip()
+    +attachOpticalSight()Builder
+    +attachUnderbarrel()Builder
+    +attachStock()Builder
+    +attachMagazine()Builder
+    +attachGrip()Builder
 }
 Director --o "1" GunBuilder
 class Director {
@@ -219,4 +219,35 @@ class Director {
 ### Implementation
 
 ### Advantage and disadvantage of builder pattern
+
+#### Advantages
+
+- Improve code readability
+The methods' names give clear intention of steps being done to build the object versus long constructor call. The code are also self-docuemnted via properly named method.
+- Flexible construction
+  Can skip unwanted components. With constructor call, the corresponding parameter still need placeholder argument.
+- Strict verification of arguments. 
+Separate methods allows short and strict validation of an argument before using, ensure the correct combination of components for a specific object.
+- High reusability
+  Construction of objects are abstracted and encapsulated with features of the programming language. The interface of Builder can be reused to implement concrete classes, which will construct variants of the object.
+- Easy maintainance and debugging
+  Construction of the object is visible to those who have responsibility. Other programming have only access to the interface of Builder, whose inner logic might change to accommodate to the change in the object.Therefore, change to construction does not affect other part of the program.
+
+### Disadvantage
+
+- Higher code complexity
+More classes are to be created to realize the pattern. In the interface of the Builder and its implementation, there are repetitive methods for construction steps.
+
+- Decreased performance
+Virtual methods cost slightly more resource compared to normal methods. The builders need memory to store the intermediate object.
+
+- Complex implementation
+Is not needed for simple objects or those who constructor are easy to understand. The design pattern also take times to be fully implemented, and there are more code to maintain.
+
+- Prone to logical error
+If the retrieval of object from the Builder is not controlled, the result object might raise error when being used. However, controlling these aspects require more attribute to trace the property, which add up to memory cost. Programmer might forget to call the `reset()` method between each construction, which might lead to unwanted behaviour of the objects.
+
+### Conclusion
+The builder design pattern is a tool to simplify and increase code readability of object whose constructors are complex. By creating one or more abstraction layers, the pattern make the process of construction objects simple, self-documenting and easy to test. However, these advantages come with a trade of performance and code complexity.
+
 
