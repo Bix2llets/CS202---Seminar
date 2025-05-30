@@ -91,6 +91,7 @@ Builders' construction of objects can also be abstracted further with Directors.
 In a shooter game, there are various guns that belong to different types. Each of them can be customized with attachments. For simplicity, we assume every gun has the same set of possible attachments.
 
 A gun can have attachments to be installed on. Some of them might have their own functionality. Some of them might have their tracking data. For example, the optical sight has toggleable lighting and energy left, the underbarrel utility can be used and need to track the remaining uses, magazine can be reloaded and need to keep track of rounds left, etc. . Player can freely customize their weapon, hence there are a lot of variety of guns that we need to deal with.
+
 ### 2. Naive solution and their drawbacks
 
 A naive solution for this problem is that we manage the attachment via attributes of the `Gun` class.
@@ -151,6 +152,7 @@ class Builder1{
 ```
 
 Example for the real world problem
+
 ```mermaid
 classDiagram
 class Gun {
@@ -167,68 +169,54 @@ class Gun {
     +setGrip(setGrip)
 }
 
-class AssaultRifleBuilder {
+class GunBuilder {
     -result: Gun
     +getObject() Gun
     +reset()
-    +attachHolographicSight()
-    +attachStock(GunStock)
-    +attachMagazine(Magazine)
-    +attachBayonet()
-    +attachFlashlight()
-    +attachVerticalGrip()
-}
 
+    attachOpticalSight()*
+    attachUnderbarrel()*
+    attachStock()*
+    attachMagazine()*
+    attachGrip()*
+}
+Gun "1" <-- GunBuilder
+GunBuilder <|.. AssaultRifleBuilder
+GunBuilder <|.. SniperRifleBuilder
+GunBuilder <|.. MachineGunBuilder
+class AssaultRifleBuilder {
+    +attachOpticalSight()
+    +attachUnderbarrel()
+    +attachStock()
+    +attachMagazine()
+    +attachGrip()
+}
 class SniperRifleBuilder {
-    -result: Gun
-    +getObject() Gun
-    +reset()
-    
-    +attachTelescope()
-    +attachBipod()
-    +attachMagazine(Magazine)
-    +attachStock(GunStock)
-    +attachHorizontalGrip()
+    +attachOpticalSight()
+    +attachUnderbarrel()
+    +attachStock()
+    +attachMagazine()
+    +attachGrip()
 }
 class MachineGunBuilder {
-    -result: Gun
-
-    +getObject() Gun
-    +reset()
-
-    +attachTripod()
-    +attachBoxMagazine()
-    +attachChainMagazine()
+    +attachOpticalSight()
+    +attachUnderbarrel()
     +attachStock()
-    +attachBarrelCooler()
+    +attachMagazine()
+    +attachGrip()
 }
-note for MachineGunBuilder "Machine gun does not need
- attached sight nor stock"
-Gun <-- AssaultRifleBuilder
-Gun <-- SniperRifleBuilder
-Gun <-- MachineGunBuilder
-AssaultRifleBuilder <-- AssaultRifleDirector
-SniperRifleBuilder <-- SniperRifleDirector
-MachineGunBuilder <-- ChainMachineGunDirector
-MachineGunBuilder <-- BoxMachineGunDirector
+Director --o "1" GunBuilder
+class Director {
+    builder: GunBuilder
 
-class AssaultRifleDirector {
-    builder: AssaultRifleBuilder
-    +getWeapon(Magazine, Stock) Gun
+    setBuilder(GunBuilder)
+    getWeapon(): Gun
 }
 
-class SniperRifleDirector {
-    builder: SniperRifleBuilder
-    +getWeapon(Magazine, Stock) Gun
-}
-class BoxMachineGunDirector {
-    builder: MachineGunBuilder
-    +getWeapon() Gun
-}
-
-class ChainMachineGunDirector {
-    builder: MachineGunBuilder
-    +getWeapon() Gun
-}
 
 ```
+
+### Implementation
+
+### Advantage and disadvantage of builder pattern
+
