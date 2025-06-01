@@ -170,6 +170,7 @@ class Gun {
 }
 
 class GunBuilder {
+    <<abstract>>
     -result: Gun
     +getObject() Gun
     +reset()
