@@ -249,6 +249,7 @@ Is not needed for simple objects or those who constructor are easy to understand
 If the retrieval of object from the Builder is not controlled, the result object might raise error when being used. However, controlling these aspects require more attribute to trace the property, which add up to memory cost. Programmer might forget to call the `reset()` method between each construction, which might lead to unwanted behaviour of the objects.
 
 ### Conclusion
+
 The builder design pattern is a tool to simplify and increase code readability of object whose constructors are complex. By creating one or more abstraction layers, the pattern make the process of construction objects simple, self-documenting and easy to test. However, these advantages come with a trade of performance and code complexity.
 
 
