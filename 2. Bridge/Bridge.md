@@ -86,7 +86,13 @@ class ConcreteImplementation2 {
 
 ## Applying to the original problem
 
-To solve the problem we have introduced in the first section, we separate the classes into shapes, operating systems and drivers specific classes.
+To solve the problem we have introduced in the first section, we separate the classes into shapes, operating systems and drivers specific classes. This way, we use the Bridge design pattern with 2 bridges, with each component has their own responsibiilty.
+
+- `Shape`: Control the information about geometry objects
+- `Driver`: Decide how to process the geometry objects
+- `System`: Decide the protocol of sending the geomtry objects to operating system for displaying
+
+With this pattern, the number of classes reduced significantly from $9N$ ($N$ shapes, $3$ graphic APIs, $3$ operating systems) to $N + 6$. Moreover, we can easily extend them in case there is a new operating system or a new graphic API being introduced. Theoretically, we can change the driver or operating system used during runtime using appropriate methods, but there are no practical use for this.
 
 ```mermaid
 classDiagram
@@ -308,6 +314,14 @@ The abstractions are loosely coupled to implementations instead of permanent bin
 
 - **Not a universal solution**: This pattern might backfire when the implementations and abstractions has strict compatibility requirements. To solve this, we need overhead validation of compatibiity. Moreover, if the checking are not conducted fully, runtime error might happens.
 - **Slightly worse performance**: The method relies on inheritance and composition, which display worse performance which might be inefficient during work with limited resources
+
+## Application to other problems
+
+### Payment system
+
+A payment system consist of user interface(front-end) and the transaction related part(back-end). We can separate them using the bridge pattern, hence the front-end can be developed to take payment information from multiple payment method: credit card, virtual account, debit card, etc.. Similarly, the back-end can be developed based on an interface, which get implemented to execute communincation protocols to service provider in each concrete classes. Then, the front-end can instantize and call the appropriate back-end object for each transaction made by customer. This allows parallel executation and flexibility in payment methods. Moreover, the payment methods are simpler and the new one can be developed independently when there is necessity.
+
+### Multi-platform app development
 
 ## Conclusion
 
