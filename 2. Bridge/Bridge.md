@@ -319,9 +319,7 @@ The abstractions are loosely coupled to implementations instead of permanent bin
 
 ### Payment system
 
-A payment system consist of user interface(front-end) and the transaction related part(back-end). We can separate them using the bridge pattern, hence the front-end can be developed to take payment information from multiple payment method: credit card, virtual account, debit card, etc.. Similarly, the back-end can be developed based on an interface, which get implemented to execute communincation protocols to service provider in each concrete classes. Then, the front-end can instantize and call the appropriate back-end object for each transaction made by customer. This allows parallel executation and flexibility in payment methods. Moreover, the payment methods are simpler and the new one can be developed independently when there is necessity.
-
-### Multi-platform app development
+A payment system consists of user interface(front-end) and the transaction related part(back-end). We can separate them using the bridge pattern, hence the front-end can be developed to take payment information from multiple payment method: credit card, virtual account, debit card, etc.. Similarly, the back-end can be developed based on an interface, which get implemented to execute communincation protocols to service provider in each concrete classes. Then, the front-end can instantize and call the appropriate back-end object for each transaction made by customer. This allows parallel executation and flexibility in payment methods. Moreover, the payment methods are simpler and the new one can be developed independently when there is necessity.
 
 ## Conclusion
 
