@@ -129,14 +129,11 @@ System <|.. Linux
 
 ### Advantage
 
-- Extensible and indepedent relation between abstraction and implementation
-The abstraction does not permanently bind to a specific implementation with this pattern. Moreover, the use of abstract classes provides an interface to call for the implementations, which allows the implementation used for an abstraction to be dynamic and can be easily changed during runtime.
-- Separation of concern and responsibility
-With the separation of abstraction and implementation, or multiple dimension of extension, the functionality for each of them can be made more detailed and specific.  
+- **Extensible and indepedent relation between abstraction and implementation**
+The abstractions are loosely coupled to implementations instead of permanent binding. The implementation used for each abstraction is flexible and can be easily changed runtime-wise.
+- **Separation of concern and responsibility**: Each part of the Bridge pattern has functionality and their range of responsibility smaller. This increase the maintainability of code as it can be easity tested. 
 
 ### Disadvantage
 
-- Not a golden hammer that can be used to solve abtraction-implementation problems
-For objects that are guaranteed to have low number of implementation or abstraction or if the implementation for each abstraction cannot be interchanged, using this pattern might backfire.
-- Slightly worse performance
-The method relies on inheritance and composition, which display worse performance which might be inefficient during work with limited resources 
+- **Not a universal solution**: This pattern might backfire when the implementations and abstractions has strict compatibility requirements. To solve this, we need overhead validation of compatibiity. Moreover, if the checking are not conducted fully, runtime error might happens.
+- **Slightly worse performance**: The method relies on inheritance and composition, which display worse performance which might be inefficient during work with limited resources
