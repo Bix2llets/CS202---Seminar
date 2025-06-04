@@ -1,4 +1,4 @@
-# Strategy 
+# Strategy
 
 ## Problem
 
@@ -78,6 +78,111 @@ PaymentHandler --|> Payment
 Payment <|.. VisaCredit
 Payment <|.. MastercardDebit
 Payment <|.. NapasCredit
+```
+
+## Implementation
+
+```cpp
+class Payment {
+public:
+    virtual ~Payment() = default;
+    virtual bool sendQuery(const PaymentInfo& info) = 0;
+    virtual bool orderTransaction(const PaymentInfo& info) = 0;
+};
+
+class VisaCredit : public Payment {
+public:
+    bool sendQuery(const PaymentInfo& info) override {
+        // Visa-specific validation logic
+        return validateVisaCard(info.cardNumber);
+    }
+    
+    bool orderTransaction(const PaymentInfo& info) override {
+        // Visa-specific transaction processing
+        return processVisaTransaction(info);
+    }
+};
+class MasterDebit : public Payment {
+public:
+    bool sendQuery(const PaymentInfo& info) override {
+        // Visa-specific validation logic
+        return validateVisaCard(info.cardNumber);
+    }
+    
+    bool orderTransaction(const PaymentInfo& info) override {
+        // Visa-specific transaction processing
+        return processVisaTransaction(info);
+    }
+};
+class NapasCredit : public Payment {
+public:
+    bool sendQuery(const PaymentInfo& info) override {
+        // Visa-specific validation logic
+        return validateVisaCard(info.cardNumber);
+    }
+    
+    bool orderTransaction(const PaymentInfo& info) override {
+        // Visa-specific transaction processing
+        return processVisaTransaction(info);
+    }
+};
+
+class PaymentHandler {
+private:
+    std::unique_ptr<Payment> paymentMethod;
+    
+public:
+    void setPaymentMethod(std::unique_ptr<Payment> method) {
+        paymentMethod = std::move(method);
+    }
+    
+    bool validatePaymentInfo(const PaymentInfo& info) {
+        return paymentMethod ? paymentMethod->sendQuery(info) : false;
+    }
+    
+    bool requestTransaction(const PaymentInfo& info) 
+    {
+        if (paymentMethod == nullptr) return false;
+        if (paymentMethod->sendQueryInfo(info))
+            return paymentMethod->orderTransaction(info);
+        return false;
+    }
+};
+class PaymentInfo {
+    private: 
+    string cardID;
+    float money;
+    string currencyUnit;
+
+    public:
+    PaymentInfo(string cardID, float money, string currencyUnit):
+        cardID{cardID}, 
+        money{money}, 
+        currencyUnit{currencyUnit} {}
+}
+int main() {
+    PaymentHandler handler;
+    PaymentInfo info{"1234-5678-9012-3456", 500.0, "USD"};
+    
+    // Use Visa Credit strategy
+    handler.setPaymentMethod(std::make_unique<VisaCredit>());
+    
+    if (!handler.requestTransaction(info)) {
+        std::cerr << "Transaction failed\n";
+    }
+
+    handler.setPaymentMethod(std::make_unique<MasterDebit>());
+    if (!handler.requestTransaction(info)) {
+        std::cerr << "Transaction failed\n";
+    }
+    
+    handler.setPaymentMethod(std::make_unique<NapasCredit>());
+    if (!handler.requestTransaction(info)) {
+        std::cerr << "Transaction failed\n";
+    }
+    
+    return 0;
+}
 ```
 
 ## Pros and Cons of Strategy Pattern

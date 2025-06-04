@@ -1,98 +1,12 @@
 # Builder
 
-## Problem
-
-Suppose there is an generic object, which has a great diversity in concrete implementation, that is, the object has a great amount of attributes that need to be specified by programmer. For example, a generic class `Truck` can has many variation:
-
-- Has engine
-- is pulled by another truck
-- Has driver's accommodation
-- Has roof
-- Has freezer
-- Has back mounted equipment
-- Has side mounted equipment
-- Has trailer connector to pull other trucks
-- Has spare wheels compartment
-- etc
-
-Each of the these attributes might be also an object, which further complexify the creation of `Truck`.
-
-## The naive solution
-
-To construct the concrete objects that can cover all of these variations, a solution is that we create a class for each of them. However, it is impractical since for each combination of attributes, we need a concrete class for them. Therefore, the number of classes that we need to declare increases exponentially.
-
-Another solution is that we can let the constructor construct the object itself. However, to provide enough information to build up such object, the number of parameter needed is large, thus make the code less readable with long constructor call.
-To shorten it, we can use the default parameters. However, default parameters only allow us to omit a continuous block of arguments at the end. Therefore, omitting some argument in the middle is not an option with this approach. Moreover, there are cases where some argument are rarely used throughout the development, thus it is questionable of if the corresponding parameter helps with construction of object.
-
-An example for this is
-
-```mermaid
-classDiagram
-class Truck{
-    -hasEngine: bool
-    -engine: Engine
-    -pulledBy: Truck
-    -hasDriverLivingArea: bool
-    -hasRoof: bool
-    -hasFreezer: bool
-    -hasBackMountedEquipment: bool
-    -hasSideMountedEquipment: bool
-    -hasTrailerConnector: bool
-    -pulling: Truck
-    +Truck(hasEngine: bool, engine: Engine,
-    pulledBy: Truck, hasDriverLivingArea: bool, 
-    hasRoof: bool, hasFreezer: bool, 
-    hasBackMountedEquipment: bool ,
-    hasSideMountedEquipment: bool ,
-    hasTrailerConnector: bool, pulling: Truck
-    )
-}
-```
-
-## The design pattern
-
-This design pattern further extends the latter solution mentioned in the previous section. The construction of the generic class is controlled by middlemans, called the Builders.
-
-The Builders provide an interface for programmer to build up complex objects with short and clean code. Typically, programmers interact with interfaces provided to create object steps by steps. In this way, programmers don't need to specify argument that is defaulted to values i.e. 0 for element that does not exist in the object or nullptr for pointer that is not going to be used.
-
-Multiple builders also help with different implementation of building the object by controlling and encapsulating some argument of the original constructor. For example, in `BuilderEngineV8` class, the method `addEngine()` will make the truck has the V8 engine, but in the class `BuilderRocketEngine`, the method `addEngine()` will assemble the rocket engine to the truck.
-
-The general structure of a Builder class is:
-
-```mermaid
-classDiagram
-class Builder {
-    building: ObjectType
-    +reset()
-    +getObject() ObjectType
-    +addFeature1()
-    +addFeature2()
-    +addFeature3()
-}
-```
-
-Builders' construction of objects can also be abstracted further with Directors. They are classes that provides methods of invoking a sequence of methods of a builder class and return the result object. Using such methods allows reuse of construction of a particular object throughout the program.
-
-## Report content
-
-1. A realworld problem (that needs your pattern to solve)
-1. A naive solution (without your pattern)
-1. Some problems occur with your naive solution
-1. An introduction about your pattern
-1. A general class diagram
-1. A class diagram for your problem in step 1
-1. The implementation of your pattern
-1. Pros and cons of our pattern
-1. Some other realworld problems, how the design patterns are applied in web dev, mobile dev
-1. Quiz: 5-8 questions, ABCD choices, with small gifts (candies, cakes, hugs, kisses...) for correct answers
-
-### 1. Real world problem
+## 1. Real world problem
 
 In a shooter game, there are various guns that belong to different types. Each of them can be customized with attachments. For simplicity, we assume every gun has the same set of possible attachments.
 
 A gun can have attachments to be installed on. Some of them might have their own functionality. Some of them might have their tracking data. For example, the optical sight has toggleable lighting and energy left, the underbarrel utility can be used and need to track the remaining uses, magazine can be reloaded and need to keep track of rounds left, etc. . Player can freely customize their weapon, hence there are a lot of variety of guns that we need to deal with.
 
-### 2. Naive solution and their drawbacks
+## 2. Naive solution and their drawbacks
 
 A naive solution for this problem is that we manage the attachment via attributes of the `Gun` class.
 
@@ -123,11 +37,11 @@ The practice of instantiating objects with minimal information and leave the res
 
 Another approach is that we use concrete classes to narrow down the amount of using  attributes used for tracking the attachments. With this approach, we need a unified interface to create them as they all are the derived classes of `Gun`. The more specific the concrete classes are, the more classes we need to create, and the longer their names are in order to describe which type of gun will be created with them. For example, the name for the class in the previous example will be `GunOpticalStock`. A name for the class of gun with all attachments possible can be `GunOpticalUnderbarrelStockExMagGrip`. Such classes' names are hard to read hence also reduce the maintainability of the program. Furthermore, the number of classes increases exponentially with the number of attributes that we need to reduce.
 
-### The Builder design pattern
+## The Builder design pattern
 
 This pattern is about separation of construction of complex objects into sequential steps and manage them with middlemen, called the Builders. They serve as an abstraction layer, hiding the detailed construction of object while providing a unified interface for user to build up the desired object step by step. Moreover, the builders can also enforce some parameter during the construction of object. There might also be multiple builder for one object to construct different subtypes.
 
-To reuse a specific sequence of steps in building an object, we can also use another type of class, called the `Director`. The `Director` provide methods to invoke a sequence of construction steps in the `Builder` associated with it. It can also change the builder used in the sequences, provided that they share the same interface. Hence, the `Director` can also be used to construct different kind of classes if their `Builder` share the same base classes
+To reuse a specific sequence of steps in building an object, we can also use another type of class, called the `Director`. The `Director` provide methods to invoke a sequence of construction steps in the `Builder` associated with it. It can also change the builder used in the sequences, provided that they share the same interface. Hence, the `Director` can also be used to construct different kind of classes if their `Builder` share the same interface.
 
 ```mermaid
 classDiagram
@@ -151,7 +65,13 @@ class Builder1{
 }
 ```
 
-Example for the real world problem
+## Apply to the original problem
+
+We create the class `Gun`, which serve as the generic class that represent all guns used in the game. The `Gun` class should provide a constructors that initialize the object with minimal information and methods that allow user to change the components that the gun use.
+
+Then, we create an interface named `GunBuilder`. Inside, we declare concrete methods for retrieval of object and resetting the object being constructed. Other methods for attaching components are declared *virtual*. They will be implemented in inherited classes.
+
+Optionally, the `Director` class can also be implemented. The `Director` will hold one instance of the `GunBuilder` and provide methods to change the builder used and to retrieve the product.
 
 ```mermaid
 classDiagram
@@ -217,39 +137,216 @@ class Director {
 
 ```
 
-### Implementation
+## Implementation
 
-### Advantage and disadvantage of builder pattern
+### Basic Gun Class
 
-#### Advantages
+```cpp
+class Gun {
+private:
+    OpticalSight* opticalSight;
+    Underbarrel* underbarrel;
+    GunStock* stock;
+    Magazine* magazine;
+    GunGrip* grip;
+    
+public:
+    Gun() : opticalSight(nullptr), underbarrel(nullptr), 
+            stock(nullptr), magazine(nullptr), grip(nullptr) {}
+    
+    void setOpticalSight(OpticalSight* sight) { opticalSight = sight; }
+    void setUnderbarrel(Underbarrel* under) { underbarrel = under; }
+    void setStock(GunStock* st) { stock = st; }
+    void setMagazine(Magazine* mag) { magazine = mag; }
+    void setGrip(GunGrip* gr) { grip = gr; }
+    
+    // Display gun configuration
+    void displayConfiguration() const;
+};
+```
 
-- Improve code readability
-The methods' names give clear intention of steps being done to build the object versus long constructor call. The code are also self-docuemnted via properly named method.
-- Flexible construction
-  Can skip unwanted components. With constructor call, the corresponding parameter still need placeholder argument.
-- Strict verification of arguments. 
-Separate methods allows short and strict validation of an argument before using, ensure the correct combination of components for a specific object.
-- High reusability
-  Construction of objects are abstracted and encapsulated with features of the programming language. The interface of Builder can be reused to implement concrete classes, which will construct variants of the object.
-- Easy maintainance and debugging
-  Construction of the object is visible to those who have responsibility. Other programming have only access to the interface of Builder, whose inner logic might change to accommodate to the change in the object.Therefore, change to construction does not affect other part of the program.
+### Abstract Builder
+
+```cpp
+class GunBuilder {
+protected:
+    Gun* result;
+    
+public:
+    GunBuilder() {result = new Gun();}
+    virtual ~GunBuilder() = default;
+    
+    void reset() {
+        delete result;
+        result = new Gun();
+    }
+    
+    Gun* getObject() {
+        Gun* gun = result;
+        result = nullptr;
+        return gun;
+    }
+    
+    virtual GunBuilder& attachOpticalSight() = 0;
+    virtual GunBuilder& attachUnderbarrel() = 0;
+    virtual GunBuilder& attachStock() = 0;
+    virtual GunBuilder& attachMagazine() = 0;
+    virtual GunBuilder& attachGrip() = 0;
+};
+```
+
+### Concrete Builders
+
+```cpp
+class AssaultRifleBuilder : public GunBuilder {
+public:
+    GunBuilder& attachOpticalSight() override {
+        result->setOpticalSight(new HolographicSight());
+        return *this;
+    }
+    
+    GunBuilder& attachUnderbarrel() override {
+        result->setUnderbarrel(new VerticalGrip());
+        return *this;
+    }
+    
+    GunBuilder& attachStock() override {
+        result->setStock(new AdjustableStock());
+        return *this;
+    }
+    
+    GunBuilder& attachMagazine() override {
+        result->setMagazine(new StandardMagazine(30));
+        return *this;
+    }
+    
+    GunBuilder& attachGrip() override {
+        result->setGrip(new HandheldGrip());
+        return *this;
+    }
+};
+
+class SniperRifleBuilder : public GunBuilder {
+public:
+    GunBuilder& attachOpticalSight() override {
+        result->setOpticalSight(new SniperScope());
+        return *this;
+    }
+    
+    GunBuilder& attachUnderbarrel() override {
+        result->setUnderbarrel(new Bipod());
+        return *this;
+    }
+    
+    GunBuilder& attachStock() override {
+        result->setStock(new PrecisionStock());
+        return *this;
+    }
+    
+    GunBuilder& attachMagazine() override {
+        result->setMagazine(new PrecisionMagazine(10));
+        return *this;
+    }
+    
+    GunBuilder& attachGrip() override {
+        result->setGrip(new SniperGrip());
+        return *this;
+    }
+};
+```
+
+### Director Class
+
+```cpp
+class Director {
+private:
+    GunBuilder* builder;
+    
+public:
+    Director(GunBuilder* b) : builder(b) {}
+    
+    void setBuilder(GunBuilder* b) { builder = b; }
+    
+    Gun* buildBasicWeapon() {
+        builder->reset();
+        return builder->attachMagazine()
+                     .attachStock()
+                     .getObject();
+    }
+    
+    Gun* buildFullyEquippedWeapon() {
+        builder->reset();
+        return builder->attachOpticalSight()
+                     .attachUnderbarrel()
+                     .attachStock()
+                     .attachMagazine()
+                     .attachGrip()
+                     .getObject();
+    }
+    
+    Gun* buildCustomWeapon() {
+        builder->reset();
+        return builder->attachOpticalSight()
+                     .attachStock()
+                     .attachMagazine()
+                     .getObject();
+    }
+};
+```
+
+### Usage Example
+
+```cpp
+int main() {
+    // Create builders
+    AssaultRifleBuilder arBuilder;
+    SniperRifleBuilder sniperBuilder;
+    
+    // Create director
+    Director director(&arBuilder);
+    
+    // Build assault rifle with full equipment
+    Gun* assaultRifle = director.buildFullyEquippedWeapon();
+    
+    // Switch to sniper rifle builder
+    director.setBuilder(&sniperBuilder);
+    Gun* sniperRifle = director.buildCustomWeapon();
+    
+    // Manual building without director
+    arBuilder.reset();
+    Gun* customGun = arBuilder.attachOpticalSight()
+                             .attachMagazine()
+                             .getObject();
+    
+    // Clean up
+    delete assaultRifle;
+    delete sniperRifle;
+    delete customGun;
+    
+    return 0;
+}
+```
+
+## Advantage and disadvantage of builder pattern
+
+### Advantages
+
+- **Improve code readability**: The methods' names give clear intention of steps being done to build the object versus long constructor call. The code are also self-docuemnted via properly named method.
+- **Flexible construction**: Can skip unwanted components. With constructor call, the corresponding parameter still need placeholder argument.
+- **Strict verification of arguments.**: Separate methods allows short and strict validation of an argument before using, ensure the correct combination of components for a specific object.
+- **High reusability**: Construction of objects are abstracted and encapsulated with features of the programming language. The interface of Builder can be reused to implement concrete classes, which will construct variants of the object.
+- **Easy maintainance and debugging**: Construction of the object is visible to those who have responsibility. Other programming have only access to the interface of Builder, whose inner logic might change to accommodate to the change in the object.Therefore, change to construction does not affect other part of the program.
 
 ### Disadvantage
 
-- Higher code complexity
-More classes are to be created to realize the pattern. In the interface of the Builder and its implementation, there are repetitive methods for construction steps.
+- **Higher code complexity**: More classes are to be created to realize the pattern. In the interface of the Builder and its implementation, there are repetitive methods for construction steps.
 
-- Decreased performance
-Virtual methods cost slightly more resource compared to normal methods. The builders need memory to store the intermediate object.
+- **Decreased performance**: Virtual methods cost slightly more resource compared to normal methods. The builders need memory to store the intermediate object.
 
-- Complex implementation
-Is not needed for simple objects or those who constructor are easy to understand. The design pattern also take times to be fully implemented, and there are more code to maintain.
+- **Complex implementation**: The pattern is not needed for simple objects or those who constructor are easy to understand. The design pattern also take times to be fully implemented, and there are more code to maintain.
 
-- Prone to logical error
-If the retrieval of object from the Builder is not controlled, the result object might raise error when being used. However, controlling these aspects require more attribute to trace the property, which add up to memory cost. Programmer might forget to call the `reset()` method between each construction, which might lead to unwanted behaviour of the objects.
+- **Prone to logical error**: If the retrieval of object from the Builder is not controlled, the result object might raise error when being used. However, controlling these aspects require more attribute to trace the property, which add up to memory cost. Programmers might forget to call the `reset()` method between each construction, which might lead to unwanted behaviour of the objects.
 
-### Conclusion
+## Conclusion
 
 The builder design pattern is a tool to simplify and increase code readability of object whose constructors are complex. By creating one or more abstraction layers, the pattern make the process of construction objects simple, self-documenting and easy to test. However, these advantages come with a trade of performance and code complexity.
-
-
