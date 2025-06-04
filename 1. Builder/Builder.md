@@ -4,7 +4,7 @@
 
 In a shooter game, there are various guns that belong to different types. Each of them can be customized with attachments. For simplicity, we assume every gun has the same set of possible attachments.
 
-A gun can have attachments to be installed on. Some of them might have their own functionality. Some of them might have their tracking data. For example, the optical sight has toggleable lighting and energy left, the underbarrel utility can be used and need to track the remaining uses, magazine can be reloaded and need to keep track of rounds left, etc. . Player can freely customize their weapon, hence there are a lot of variety of guns that we need to deal with.
+A gun can have various attachments installed on it. Some of them might have their own functionality. Some of them might have their tracking data. For example, the optical sight has toggleable lighting and energy left, the underbarrel utility can be used and need to track the remaining uses, magazine can be reloaded and need to keep track of rounds left, etc. . Player can freely customize their weapon, hence there are many varieties of guns that we need to deal with.
 
 ## 2. Naive solution and their drawbacks
 
@@ -29,19 +29,19 @@ However, the constructor of this class, if needed all information to initialize 
 For example, to create a gun with holographic sight and wooden stock, the constructor is called as
 `Gun(holographicSight, nullptr, woodenStock, nullptr, nullptr, numberOfRounds, energy, use)`
 
-As we can expect, there are too much parameter for the constructor. Moreover, it reduces its readability as reader won't know what `nullptr` stands for.
+As we can expect, there are too many parameters for the constructor. Moreover, it reduces its readability as readers won't know what `nullptr` represents.
 
 We can use the feature of default parameters to reduce the number of arguments needed to be provided, however this only allows us to omit arguments at the end of the constructor.
 
-The practice of instantiating objects with minimal information and leave the rest for later assignment is a way to reduce the length of the parameter, but there are prone of errors caused by developers accidentally constructing the uninteded object, such as an assault rifle with high-magnification sniper sight and without magazine, rendering it useless. Moreover, if there are any other task that try to use the object when construction via methods are not finished, unwanted consequences might arise.
+The practice of instantiating objects with minimal information and leaving the rest for later assignment is a way to reduce the length of the parameter, but there is a risk of errors caused by developers accidentally constructing the unintended object, such as an assault rifle with high-magnification sniper sight and without magazine, rendering it useless. Moreover, if there is any other task that try to use the object when construction via methods are not finished, unwanted consequences might arise.
 
-Another approach is that we use concrete classes to narrow down the amount of using  attributes used for tracking the attachments. With this approach, we need a unified interface to create them as they all are the derived classes of `Gun`. The more specific the concrete classes are, the more classes we need to create, and the longer their names are in order to describe which type of gun will be created with them. For example, the name for the class in the previous example will be `GunOpticalStock`. A name for the class of gun with all attachments possible can be `GunOpticalUnderbarrelStockExMagGrip`. Such classes' names are hard to read hence also reduce the maintainability of the program. Furthermore, the number of classes increases exponentially with the number of attributes that we need to reduce.
+Another approach is that we use concrete classes to reduce the number of attributes being used to track attachments. With this approach, we need a unified interface to create them as they all are the derived classes of `Gun`. The more specific the concrete classes are, the more classes we need to create, and the longer their names are in order to describe which type of gun will be created with them. For example, the name for the class in the previous example will be `GunOpticalStock`. A name for the class of gun with all attachments possible can be `GunOpticalUnderbarrelStockExMagGrip`. Such classes' names are hard to read hence also reduce the maintainability of the program. Furthermore, the number of classes increases exponentially with the number of attributes that we need to reduce.
 
 ## The Builder design pattern
 
 This pattern is about separation of construction of complex objects into sequential steps and manage them with middlemen, called the Builders. They serve as an abstraction layer, hiding the detailed construction of object while providing a unified interface for user to build up the desired object step by step. Moreover, the builders can also enforce some parameter during the construction of object. There might also be multiple builder for one object to construct different subtypes.
 
-To reuse a specific sequence of steps in building an object, we can also use another type of class, called the `Director`. The `Director` provide methods to invoke a sequence of construction steps in the `Builder` associated with it. It can also change the builder used in the sequences, provided that they share the same interface. Hence, the `Director` can also be used to construct different kind of classes if their `Builder` share the same interface.
+To reuse a specific sequence of steps in building an object, we can also use another type of class, called the `Director`. The `Director` provides methods to invoke a sequence of construction steps in the `Builder` associated with it. It can also change the builder used in the sequences, provided that they share the same interface. Hence, the `Director` can also be used to construct different kinds of classes if their `Builder` share the same interface.
 
 ```mermaid
 classDiagram
@@ -59,7 +59,7 @@ class Builder1{
  -result: ExampleClass
  +reset()
  +buildAttribute1()
- +bulldAttribute2()
+ +buildAttribute2()
  +buildAttribute3() 
  +getObject(): ExampleClass
 }
@@ -67,9 +67,9 @@ class Builder1{
 
 ## Apply to the original problem
 
-We create the class `Gun`, which serve as the generic class that represent all guns used in the game. The `Gun` class should provide a constructors that initialize the object with minimal information and methods that allow user to change the components that the gun use.
+We create the class `Gun`, which serve as the generic class which represents all guns used in the game. The `Gun` class should provide a constructor that initialize the object with minimal information and methods that allow user to change the components that the gun use.
 
-Then, we create an interface named `GunBuilder`. Inside, we declare concrete methods for retrieval of object and resetting the object being constructed. Other methods for attaching components are declared *virtual*. They will be implemented in inherited classes.
+Then, we create an interface named `GunBuilder`. Inside, we declare concrete methods for retrieval of object and resetting the object being constructed. Other methods for attaching components are declared as *virtual* functions. They will be implemented in inherited classes.
 
 Optionally, the `Director` class can also be implemented. The `Director` will hold one instance of the `GunBuilder` and provide methods to change the builder used and to retrieve the product.
 
@@ -331,11 +331,11 @@ int main() {
 
 ### Advantages
 
-- **Improve code readability**: The methods' names give clear intention of steps being done to build the object versus long constructor call. The code are also self-docuemnted via properly named method.
+- **Improve code readability**: The methods' names give clear intention of steps being done to build the object versus long constructor call. The code are also self-documented via properly named method.
 - **Flexible construction**: Can skip unwanted components. With constructor call, the corresponding parameter still need placeholder argument.
 - **Strict verification of arguments.**: Separate methods allows short and strict validation of an argument before using, ensure the correct combination of components for a specific object.
 - **High reusability**: Construction of objects are abstracted and encapsulated with features of the programming language. The interface of Builder can be reused to implement concrete classes, which will construct variants of the object.
-- **Easy maintainance and debugging**: Construction of the object is visible to those who have responsibility. Other programming have only access to the interface of Builder, whose inner logic might change to accommodate to the change in the object.Therefore, change to construction does not affect other part of the program.
+- **Easy maintenance and debugging**: Construction of the object is visible to those who have responsibility. Other programming have only access to the interface of Builder, whose inner logic might change to accommodate to the change in the object.Therefore, change to construction does not affect other part of the program.
 
 ### Disadvantage
 
@@ -343,10 +343,10 @@ int main() {
 
 - **Decreased performance**: Virtual methods cost slightly more resource compared to normal methods. The builders need memory to store the intermediate object.
 
-- **Complex implementation**: The pattern is not needed for simple objects or those who constructor are easy to understand. The design pattern also take times to be fully implemented, and there are more code to maintain.
+- **Complex implementation**: The pattern is not needed for simple objects or those of which constructors are easy to understand. The design pattern also takes time to be fully implemented, and there are more code to maintain.
 
-- **Prone to logical error**: If the retrieval of object from the Builder is not controlled, the result object might raise error when being used. However, controlling these aspects require more attribute to trace the property, which add up to memory cost. Programmers might forget to call the `reset()` method between each construction, which might lead to unwanted behaviour of the objects.
+- **Prone to logical error**: If the retrieval of object from the Builder is not controlled, the result object might raise error when being used. However, controlling these aspects require more attributes to trace the property, which add up to memory cost. Programmers might forget to call the `reset()` method between each construction, which might lead to unwanted behaviour of the objects.
 
 ## Conclusion
 
-The builder design pattern is a tool to simplify and increase code readability of object whose constructors are complex. By creating one or more abstraction layers, the pattern make the process of construction objects simple, self-documenting and easy to test. However, these advantages come with a trade of performance and code complexity.
+The builder design pattern is a tool to simplify and increase code readability of object whose constructors are complex. By creating one or more abstraction layers, the pattern makes the process of construction objects simple, self-documenting and easy to test. However, these advantages come with a trade of performance and code complexity.
